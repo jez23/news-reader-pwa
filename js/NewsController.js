@@ -2,9 +2,18 @@ class NewsController {
   constructor () {
     this._newsSections = []
 
+    this._registerServiceWorker()
     this._getArticles()
   }
 
+_registerServiceWorker () {
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.register('../service-worker.js')
+      .then((register) => {
+        console.log('[Service Worker] Registered')
+      })
+  }
+}
   _getArticles () {
   fetch(`https://content.guardianapis.com/search?api-key=${apiKey}&show-fields=thumbnail`)
     .then(response => {
@@ -72,3 +81,4 @@ _updateDom () {
 
 }
 
+const newsController = new NewsController()
