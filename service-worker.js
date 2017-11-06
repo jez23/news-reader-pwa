@@ -14,3 +14,29 @@ self.addEventListener('install', event => {
       ])
     })
 })
+
+self.addEventListener('activate', event => {
+  console.log('[Service Worker] Activated')
+
+  caches.keys()
+    .then(cacheList => {
+      return Promise.all(
+        cacheList
+          .filter(cacheName => cacheName !== staticCacheName)
+          .map(cacheName => caches.delete(cacheName))
+      )
+    })
+
+  self.clients.claim()
+})
+
+self.addEventListener('fetch', event => {
+  console.log('[Service Worker] Fetch Event')
+  
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        return response || fetch(event.request)
+      })
+  )
+})
